@@ -5,13 +5,19 @@ const bodyParser = require('body-parser');
 const morgan = require('morgan');
 const app = express();
 const router = require('./router');
-const mongoose = require('mongoose');
+const cors = require('cors');
+var mongoose = require('mongoose');
+var path = require('path');
 
 // DB setup
-mongoose.connect('mongodb://localhost:auth/auth');
+mongoose.Promise = global.Promise
+mongoose.connect('mongodb://localhost:27017/cwil');
+
 
 // App setup
 app.use(morgan('combined'));
+app.use(cors());
+app.use(express.static('scripts'));
 app.use(bodyParser.json({ type: '*/*'}));
 router(app);
 

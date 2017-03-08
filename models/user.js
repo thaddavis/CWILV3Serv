@@ -1,6 +1,8 @@
-const mongoose = require('mongoose');
+var mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 const bcrypt = require('bcrypt-nodejs');
+
+mongoose.Promise = global.Promise
 
 // Define our model
 const userSchema = new Schema({
@@ -9,7 +11,10 @@ const userSchema = new Schema({
     unique: true,
     lowercase: true
   },
-  password: String
+  password: String,
+  role: String,
+  firstName: String,
+  lastName: String
 });
 
 // On save hook, encrypt password

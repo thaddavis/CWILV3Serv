@@ -4,22 +4,31 @@ const config = require('../config');
 
 function tokenForUser(user) {
   const timestamp = new Date().getTime();
-  return jwt.encode({ sub: user.id, iat: timestamp }, config.secret);
+  return jwt.encode({ sub: user.id, iat: timestamp, role: user.role }, config.secret);
 }
 
 exports.signin = function(req,res,next) {
   // User has already had their email and password auth'd
   // We just need to give them a token
+  console.log('exports.signin');
+  console.log(req.user);
 
   res.send({ token: tokenForUser(req.user) });
 }
 
 exports.signup = function(req,res,next) {
-  const email = req.body.email;
+
+  console.log('exports.signup');
+  console.log(req.body);
+
+  const email = req.body.username;
   const password = req.body.password;
+  const firstName = req.body.firstName;
+  const lastName = req.body.lastName;
+  const role = "student";
 
   if ( !email || !password) {
-    return res.status(422).send({ error: 'You must provide an email and password' });
+    return res.status(422).send({ error: 'You must provide a valid email and password' });
   }
 
 
@@ -36,7 +45,10 @@ exports.signup = function(req,res,next) {
     // If a user with email does NOT exist, create and save user record
     const newUser = new User({
       email: email,
-      password: password
+      password: password,
+      firstName: firstName,
+      lastName: lastName,
+      role: role      
     });
     newUser.save(function(err) {
       if (err) { return next(err); }
