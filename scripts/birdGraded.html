@@ -1433,7 +1433,14 @@ function handleComplete() {
 		
 		testMetadata.incClicks();
     	var nextCorrectNumber = correctOrder[(testMetadata.getClicks() - 1)];
-    	if (( evt.stageX < ( exportRoot[nextCorrectNumber].localToGlobal(exportRoot[nextCorrectNumber].x,exportRoot[nextCorrectNumber].y).x/2 + (
+    	if (nextCorrectNumber == "thirty30") {
+    		console.log("Correct Response");
+
+    		var xmlHttp = new XMLHttpRequest();
+    		xmlHttp.open( "GET", 'http://localhost:3090/testResponse/pass', false ); // false for synchronous request
+    		xmlHttp.send( null );
+
+    	} else if (( evt.stageX < ( exportRoot[nextCorrectNumber].localToGlobal(exportRoot[nextCorrectNumber].x,exportRoot[nextCorrectNumber].y).x/2 + (
     					exportRoot[nextCorrectNumber].__proto__.nominalBounds.x*2 +
     					exportRoot[nextCorrectNumber].__proto__.nominalBounds.width*2 )) &&
     			evt.stageX > ( exportRoot[nextCorrectNumber].localToGlobal(exportRoot[nextCorrectNumber].x,exportRoot[nextCorrectNumber].y).x/2 + (
@@ -1446,6 +1453,11 @@ function handleComplete() {
     		
     	} else {
     		alert("Incorrect Response");
+
+    		var xmlHttp = new XMLHttpRequest();
+    		xmlHttp.open( "GET", 'http://localhost:3090/testResponse/fail', false ); // false for synchronous request
+    		xmlHttp.send( null );
+    		
     		var element = document.getElementById('animation_container');
 			element.parentNode.removeChild(element);
     	}

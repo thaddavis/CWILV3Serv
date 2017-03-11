@@ -10,6 +10,7 @@ const ClassOfTeacher = require('./controllers/classOfTeacher');
 const ClassStudent = require('./controllers/classStudent');
 const ClassGrade = require('./controllers/classGrade');
 const ClassTest = require('./controllers/classTest');
+const TestResponse = require('./controllers/testResponse');
 
 const passportService = require('./services/passport');
 const passport = require('passport');
@@ -63,5 +64,7 @@ module.exports = function(app) {
   app.post('/newClassTest', requireAuth, ClassTest.newClassTest );
   app.get('/getClassTests', requireAuth, ClassTest.getClassTests );
   app.get('/testsForClass/:classID', requireAuth, ClassTest.getTestsForClass);
+
+  app.get('/testResponse/:result', TestResponse.newTestResponse);
 
 }
