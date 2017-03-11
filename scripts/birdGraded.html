@@ -1,4 +1,4 @@
-<div>
+<div id="gradedTest">
 <script>
 	(function (lib, img, cjs, ss, an) {
 
@@ -1396,6 +1396,27 @@ var lib, images, createjs, ss, AdobeAn;
 </script>
 <script>
 var canvas, stage, exportRoot, anim_container, dom_overlay_container, fnStartAnimation;
+
+TestMetadata = function() {
+  var clicks = 0;
+
+  this.getClicks = function() {
+    return clicks;
+  };
+  
+  this.incClicks = function() {
+    clicks++;
+    return clicks;
+  };
+};
+testMetadata = new TestMetadata();
+correctOrder = [
+    		"twenty20", "twentione21", "twentytwo22", 
+    		"twentythree23", "twentyfour24", "twentyfive25", 
+    		"twentysix26", "twentyseven27", "twentyeight28", 
+    		"twentynine29", "thirty30"
+];
+
 function init() {
 	canvas = document.getElementById("canvas");
 	anim_container = document.getElementById("animation_container");
@@ -1407,6 +1428,31 @@ function handleComplete() {
 	exportRoot = new lib.CCKCC2_2a();
 	stage = new createjs.Stage(canvas);
 	stage.addChild(exportRoot);	
+
+	stage.addEventListener("stagemousedown", function(evt) {
+		
+		testMetadata.incClicks();
+    	var nextCorrectNumber = correctOrder[(testMetadata.getClicks() - 1)];
+    	if (( evt.stageX < ( exportRoot[nextCorrectNumber].localToGlobal(exportRoot[nextCorrectNumber].x,exportRoot[nextCorrectNumber].y).x/2 + (
+    					exportRoot[nextCorrectNumber].__proto__.nominalBounds.x*2 +
+    					exportRoot[nextCorrectNumber].__proto__.nominalBounds.width*2 )) &&
+    			evt.stageX > ( exportRoot[nextCorrectNumber].localToGlobal(exportRoot[nextCorrectNumber].x,exportRoot[nextCorrectNumber].y).x/2 + (
+    					exportRoot[nextCorrectNumber].__proto__.nominalBounds.x*2 ))) &&
+    		( evt.stageY < ( exportRoot[nextCorrectNumber].localToGlobal(exportRoot[nextCorrectNumber].x,exportRoot[nextCorrectNumber].y).y/2 + (
+    					exportRoot[nextCorrectNumber].__proto__.nominalBounds.y*2 +
+    					exportRoot[nextCorrectNumber].__proto__.nominalBounds.height*2 )) &&
+    			evt.stageY > ( exportRoot[nextCorrectNumber].localToGlobal(exportRoot[nextCorrectNumber].x,exportRoot[nextCorrectNumber].y).y/2 + (
+    					exportRoot[nextCorrectNumber].__proto__.nominalBounds.y*2 )))) {
+    		
+    	} else {
+    		alert("Incorrect Response");
+    		var element = document.getElementById('animation_container');
+			element.parentNode.removeChild(element);
+    	}
+
+		// console.log( exportRoot[nextCorrectNumber].hitTest(exportRoot[nextCorrectNumber].globalToLocal(evt.stageX,evt.stageY).x,exportRoot[nextCorrectNumber].globalToLocal(evt.stageX,evt.stageY).y) );
+
+	});
 	//Registers the "tick" event listener.
 	fnStartAnimation = function() {
 		createjs.Ticker.setFPS(lib.properties.fps);

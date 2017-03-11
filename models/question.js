@@ -14,7 +14,8 @@ var Question = mongoose.model('Question', {
     enum: ["Drag & Drop", "Click Sequence", "Fill in the Blank"]
   },
   rating: Number,
-  html: String,
+  questionFile: String,
+  questionFileGraded: String,
   js: String,
 	_creator: {
 		type: mongoose.Schema.Types.ObjectId,

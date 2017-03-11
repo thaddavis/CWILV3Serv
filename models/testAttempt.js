@@ -4,4 +4,4 @@ var TestAttempt = mongoose.model('TestAttempt', {
 	
 });
 
-module.exports = { Test };
+module.exports = { TestAttempt };
