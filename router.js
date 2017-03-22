@@ -21,7 +21,7 @@ const requireSignin = passport.authenticate('local', { session: false });
 module.exports = function(app) {
 
   app.get('/', requireAuth, function(req, res) {
-    res.send({ 
+    res.send({
       userID: req.user._id,
       message: 'authenticated' });
   });
@@ -65,6 +65,7 @@ module.exports = function(app) {
   app.get('/getClassTests', requireAuth, ClassTest.getClassTests );
   app.get('/testsForClass/:classID', requireAuth, ClassTest.getTestsForClass);
 
-  app.get('/testResponse/:result', TestResponse.newTestResponse);
+  app.post('/testResponse', TestResponse.newTestResponse);
+  app.post('/testResponsesForStudentInClass', TestResponse.testResponsesForStudentInClass);
 
 }

@@ -13,7 +13,8 @@ exports.newQuestion = (req,res, next) => {
 		standard: req.body.standard,
 		genre: req.body.genre,
 		_creator: req.user._id,
-		questionFile: req.body.questionFile
+		questionFile: req.body.questionFile,
+		questionFileGraded: req.body.questionFileGraded
 	});
 	question.save().then((doc) => {
 		res.send(doc);

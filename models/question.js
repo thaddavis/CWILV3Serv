@@ -11,7 +11,7 @@ var Question = mongoose.model('Question', {
   standard: String,
   genre: {
     type: String,
-    enum: ["Drag & Drop", "Click Sequence", "Fill in the Blank"]
+    enum: ["Drag & Drop", "Click Sequence", "Fill in the Blank", "Drag & Drop Multiple Choice"]
   },
   rating: Number,
   questionFile: String,

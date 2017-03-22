@@ -1436,9 +1436,11 @@ function handleComplete() {
     	if (nextCorrectNumber == "thirty30") {
     		console.log("Correct Response");
 
-    		var xmlHttp = new XMLHttpRequest();
-    		xmlHttp.open( "GET", 'http://localhost:3090/testResponse/pass', false ); // false for synchronous request
-    		xmlHttp.send( null );
+    		$("#responseJSON").html("Correct");
+
+    		//var xmlHttp = new XMLHttpRequest();
+    		//xmlHttp.open( "GET", 'http://localhost:3090/testResponse/pass', false ); // false for synchronous request
+    		//xmlHttp.send( null );
 
     	} else if (( evt.stageX < ( exportRoot[nextCorrectNumber].localToGlobal(exportRoot[nextCorrectNumber].x,exportRoot[nextCorrectNumber].y).x/2 + (
     					exportRoot[nextCorrectNumber].__proto__.nominalBounds.x*2 +
@@ -1452,14 +1454,16 @@ function handleComplete() {
     					exportRoot[nextCorrectNumber].__proto__.nominalBounds.y*2 )))) {
     		
     	} else {
-    		alert("Incorrect Response");
+    		//alert("Incorrect Response");
 
-    		var xmlHttp = new XMLHttpRequest();
-    		xmlHttp.open( "GET", 'http://localhost:3090/testResponse/fail', false ); // false for synchronous request
-    		xmlHttp.send( null );
+    		$("#responseJSON").html("Incorrect");
+
+    		//var xmlHttp = new XMLHttpRequest();
+    		//xmlHttp.open( "GET", 'http://localhost:3090/testResponse/fail', false ); // false for synchronous request
+    		//xmlHttp.send( null );
     		
-    		var element = document.getElementById('animation_container');
-			element.parentNode.removeChild(element);
+    		//var element = document.getElementById('animation_container');
+			//element.parentNode.removeChild(element);
     	}
 
 		// console.log( exportRoot[nextCorrectNumber].hitTest(exportRoot[nextCorrectNumber].globalToLocal(evt.stageX,evt.stageY).x,exportRoot[nextCorrectNumber].globalToLocal(evt.stageX,evt.stageY).y) );
@@ -1516,5 +1520,6 @@ function handleComplete() {
 	</div>
 
 	<script>init();</script>
+	<div style="display:none;" id="responseJSON"></div>
 </div>
 </div>
