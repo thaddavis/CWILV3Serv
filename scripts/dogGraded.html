@@ -1291,23 +1291,269 @@ var lib, images, createjs, ss, AdobeAn;
 	<div style="margin:0px;">
 		<div id="animation_container" style="background-color:rgba(255, 255, 255, 1.00); width:640px; height:432px">
 			<canvas id="canvas" width="640" height="432" style="position: absolute; display: block; background-color:rgba(255, 255, 255, 1.00);"></canvas>
-			<div id="dom_overlay_container" style="pointer-events:none; overflow:hidden; width:640px; height:432px; position: absolute; left: 0px; top: 0px; display: block;">
+			<div id="dom_overlay_container" style="width:640px; height:432px; position: relative; left: 0px; top: 0px; display: block;">
+				
+				<script>
+					var droppables = new Array();
+					var itemBeingDragged = null;
+					var mouseDownPoint = {x: 0, y: 0};
+
+					function onDocumentMouseMove(mouseMoveEvent) {
+					  var point = {x: mouseMoveEvent.pageX, y: mouseMoveEvent.pageY};
+					  
+					  // Drag the draggable to this position
+					  itemBeingDragged.dragTo(point);
+
+					  // If there are any droppable elements at this position, notify them
+					  for (var i = 0; i < droppables.length; i++) {
+					    if (droppables[i].contains(point) && !droppables[i].isBeingDraggedOver) {
+					      droppables[i].onDragEnter();
+					    } else if (!droppables[i].contains(point) && droppables[i].isBeingDraggedOver) {
+					      droppables[i].onDragExit();
+					    }
+					  }
+					}
+
+					function onDocumentMouseUp(mouseUpEvent) {
+					  // If any droppable is being dragged over, accept the drop
+					  for (var i = 0; i < droppables.length; i++) {
+					    if (droppables[i].isBeingDraggedOver) {
+					      droppables[i].onDragDrop(itemBeingDragged);
+					    }
+					  }
+					  
+					  // Reset the position of the item being dragged and clear out the document event handlers
+					  itemBeingDragged.reset(mouseUpEvent);
+					}
+
+					var Draggable = function(elementId) {
+					  this.init(elementId);
+					};
+
+					Draggable.prototype = {
+					  init: function(element) {
+					    if (typeof element === "string") element = document.getElementById(element);
+					    
+					    this.element = element;
+					    this.element.className += "draggable";
+					    
+					    var self = this;
+					    
+					    this.element.onmousedown = function(mouseDownEvent) {
+					      this.style.zIndex = "1000";
+					      
+					      itemBeingDragged = self;
+					      
+					      mouseDownPoint.x = mouseDownEvent.pageX;
+					      mouseDownPoint.y = mouseDownEvent.pageY;
+					      
+					      document.onmousemove = onDocumentMouseMove;
+					      document.onmouseup = onDocumentMouseUp;
+					    };
+					  },
+					  
+					  // Called when the mouse is moved (after having been pressed on this element)
+					  dragTo: function(point) {
+					    this.element.style.left = (point.x - mouseDownPoint.x) + "px";
+					    this.element.style.top = (point.y - mouseDownPoint.y) + "px";
+					  },
+					  
+					  // Called when the mouse is lifted (after having been pressed on this element)
+					  reset: function() {
+					    this.element.style.zIndex = "";
+					    this.element.style.left = "";
+					    this.element.style.top = "";
+					      
+					    itemBeingDragged = null;
+					      
+					    mouseDownPoint.x = 0;
+					    mouseDownPoint.y = 0;
+
+					    document.onmousemove = null;
+					    document.onmouseup = null;
+					  }
+					};
+
+					// customDragDrop is a custom function which will be called when a Draggable is dropped
+					// on this Droppable; it is passed the Draggable that was dropped
+					var Droppable = function(element, customDragDrop) {
+					  this.init(element, customDragDrop);
+					};
+
+					Droppable.prototype = {
+					  init: function(element, customDragDrop) {
+					  	try {
+						    if (typeof element === "string") element = document.getElementById(element);
+						    
+						    this.element = element;
+						    this.isBeingDraggedOver = false;
+						    this.customDragDrop = customDragDrop;
+						    
+						    droppables.push(this);
+						} catch (err) {}
+					  },
+					  
+					  // Calculate the top-left coordinate of this element
+					  position: function() {
+					  	try {
+						    var position = {x: this.element.offsetLeft, y: this.element.offsetTop};
+						    
+						    var offsetParent = this.element.offsetParent;
+						    while (offsetParent) {
+						      position.x += offsetParent.offsetLeft;
+						      position.y += offsetParent.offsetTop;
+						      offsetParent = offsetParent.offsetParent;
+						    }
+						    
+						    return position;
+						 } catch (err) {}
+					  },
+					  
+					  // Calculate whether the given coordinate falls within this element's boundaries
+					  contains: function(point) {
+					  	try {
+						    var topLeft = this.position();
+						    var bottomRight = {
+						      x: topLeft.x + this.element.offsetWidth,
+						      y: topLeft.y + this.element.offsetHeight
+						    };
+						    
+						    return (
+						      topLeft.x < point.x
+						      && topLeft.y < point.y
+						      && point.x < bottomRight.x
+						      && point.y < bottomRight.y
+						    );
+						} catch (err) {}
+
+					  },
+					  
+					  // Called when an item is dragged into this element
+					  onDragEnter: function() {
+					    this.isBeingDraggedOver = true;
+					    this.element.className += "dragOver";
+					  },
+					  
+					  // Called when an item is dragged out of this element
+					  onDragExit: function() {
+					    this.isBeingDraggedOver = false;
+					    this.element.className = this.element.className.replace(/\bdragOver\b/, "");
+					  },
+					  
+					  // Called when an item is dropped on this element
+					  onDragDrop: function(draggable) {	
+					    this.onDragExit();
+					    this.customDragDrop(draggable);
+					  }
+					};
+
+					initMultChoice = function() {
+					  // custom data
+					  var data = [
+					    "Seven",
+					    "Four",
+					    "One"
+					  ];
+					  
+					  var availableMetrics = document.getElementById("available_metrics_list");
+					  
+					  for (var i = 0; i < data.length; i++) {
+					    var liElement = document.createElement("li");
+					    liElement.style.cssText = 'display: none; vertical-align: middle'; 
+					    liElement.appendChild(document.createTextNode(data[i]));
+					    availableMetrics.appendChild(liElement);
+					    var liElementDraggable = new Draggable(liElement);
+					  }
+
+					  $("#available_metrics_list li").each(function(i) {
+    					$(this).fadeIn(3000 * (i + 1), "linear").css('display','table-cell');
+					  });
+					  
+					  var availableMetricsDroppable = new Droppable(availableMetrics, function(draggable) {
+
+					    if (this.element !== draggable.element.parentNode) {
+					      this.element.appendChild(draggable.element);
+					    }
+
+					    if ($("#selected_metrics_list").first().children().length == 1) {
+							var dropArea = $("#next_metric").first();
+							dropArea[0].style.cssText = "display: inline;";
+					  	} else {
+					  		var dropArea = $("#next_metric").first();					  		
+					  		dropArea[0].style.cssText = "display: none;";
+					  	}
+
+					  });
+					  
+					  var selectedMetricsDroppable = new Droppable("next_metric", function(draggable) {
+
+					  	if ($("#selected_metrics_list").first().children().length == 1) {
+							var dropArea = $("#next_metric").first();
+							dropArea[0].style.cssText = "display: none;";
+					  	} else {
+					  		var dropArea = $("#next_metric").first();					  		
+					  		dropArea[0].style.cssText = "display: inline;";
+					  	}
+
+					    if (this.element.parentNode !== draggable.element.parentNode) {
+					      this.element.parentNode.insertBefore(draggable.element, this.element);
+					    }
+					  });
+					  
+					  new Droppable("remove_metric", function(draggable) {
+					    availableMetricsDroppable.onDragDrop(draggable);
+					  });
+					};
+
+					function answerIs() {
+						
+						if ($("#selected_metrics_list").first().children().length == 2 && $("#selected_metrics_list").first().children()[0].innerText == "One") {
+							$("#responseJSON").html("Correct");
+						} else {
+							$("#responseJSON").html("Incorrect");
+						}
+						
+					}
+
+				</script>
+
+				<br/>
+				<div id="selected_metrics">
+					<ul id="selected_metrics_list" style="top: 200px; right: 10px; width: 40%; position: absolute; display: table;">
+		    			<li style="display:inline;" id="next_metric">Drag Response Here</li>
+		  			</ul>
+				</div>
+				<div id="available_metrics_filter" style="width: 100%; bottom: 0px; z-index: 0; position: absolute;">
+
+					<h3> How many dogs are there? </h3>
+
+					<ul style="width: 98.5%; display: table;" id="available_metrics_list"> 
+					</ul>
+				</div>
+				
+				<br/>
+				<script>initMultChoice();</script>
+				<div style="display:none;" id="responseJSON"></div>
 			</div>
 		</div>
-	
+		<br/>
+		<div>
+			<button class="btn btn-primary" onclick="answerIs()">Submit Answer</button>
+		</div>
+
 		<script>init();</script>
 
 		<style>
 			#available_metrics_filter {
 			  margin: 5px;
-			  border: 1px solid gray;
+			  /*border: 1px solid gray;*/
 			  padding: 5px;
-			  background-color: rgb(230, 230, 230);
+			  /*background-color: rgb(230, 230, 230);*/
 			}
 
 			#available_metrics_list {
 			  padding: 0px;
-			  border: 1px solid gray;
+			  /*border: 1px solid gray;*/
 			  padding: 10px;
 			  background-color: white;
 			}
@@ -1322,12 +1568,13 @@ var lib, images, createjs, ss, AdobeAn;
 
 			#selected_metrics_list {
 			  margin: 5px;
-			  border: 1px solid gray;
+			  /*border: 1px solid gray;*/
 			  padding: 10px;
 			  background-color: white;
 			}
 
 			#selected_metrics_list li {
+			  display: table-cell;
 			  margin-top: -1px;
 			  border: 1px solid gray;
 			  padding: 5px;
@@ -1335,7 +1582,14 @@ var lib, images, createjs, ss, AdobeAn;
 			  background-color: white;
 			}
 
-			#selected_metrics_list li:last-child { border: 1px dotted gray; }
+			#selected_metrics_list li:last-child { 
+
+				border-top: 0px dotted gray;
+				border-right: 0px dotted gray;
+				border-left: 0px dotted gray;
+
+				border-bottom: 1px dotted gray; 
+			}
 
 			#next_metric { color: gray; }
 
@@ -1355,233 +1609,7 @@ var lib, images, createjs, ss, AdobeAn;
 
 			.dragOver { background-color: rgb(232, 232, 255) !important; }
 		</style>
-
-		<script>
-
-			var droppables = new Array();
-			var itemBeingDragged = null;
-			var mouseDownPoint = {x: 0, y: 0};
-
-			function onDocumentMouseMove(mouseMoveEvent) {
-			  var point = {x: mouseMoveEvent.pageX, y: mouseMoveEvent.pageY};
-			  
-			  // Drag the draggable to this position
-			  itemBeingDragged.dragTo(point);
-
-			  // If there are any droppable elements at this position, notify them
-			  for (var i = 0; i < droppables.length; i++) {
-			    if (droppables[i].contains(point) && !droppables[i].isBeingDraggedOver) {
-			      droppables[i].onDragEnter();
-			    } else if (!droppables[i].contains(point) && droppables[i].isBeingDraggedOver) {
-			      droppables[i].onDragExit();
-			    }
-			  }
-			}
-
-			function onDocumentMouseUp(mouseUpEvent) {
-			  // If any droppable is being dragged over, accept the drop
-			  for (var i = 0; i < droppables.length; i++) {
-			    if (droppables[i].isBeingDraggedOver) {
-			      droppables[i].onDragDrop(itemBeingDragged);
-			    }
-			  }
-			  
-			  // Reset the position of the item being dragged and clear out the document event handlers
-			  itemBeingDragged.reset(mouseUpEvent);
-			}
-
-			var Draggable = function(elementId) {
-			  this.init(elementId);
-			};
-
-			Draggable.prototype = {
-			  init: function(element) {
-			    if (typeof element === "string") element = document.getElementById(element);
-			    
-			    this.element = element;
-			    this.element.className += "draggable";
-			    
-			    var self = this;
-			    
-			    this.element.onmousedown = function(mouseDownEvent) {
-			      this.style.zIndex = "1000";
-			      
-			      itemBeingDragged = self;
-			      
-			      mouseDownPoint.x = mouseDownEvent.pageX;
-			      mouseDownPoint.y = mouseDownEvent.pageY;
-			      
-			      document.onmousemove = onDocumentMouseMove;
-			      document.onmouseup = onDocumentMouseUp;
-			    };
-			  },
-			  
-			  // Called when the mouse is moved (after having been pressed on this element)
-			  dragTo: function(point) {
-			    this.element.style.left = (point.x - mouseDownPoint.x) + "px";
-			    this.element.style.top = (point.y - mouseDownPoint.y) + "px";
-			  },
-			  
-			  // Called when the mouse is lifted (after having been pressed on this element)
-			  reset: function() {
-			    this.element.style.zIndex = "";
-			    this.element.style.left = "";
-			    this.element.style.top = "";
-			      
-			    itemBeingDragged = null;
-			      
-			    mouseDownPoint.x = 0;
-			    mouseDownPoint.y = 0;
-
-			    document.onmousemove = null;
-			    document.onmouseup = null;
-			  }
-			};
-
-			// customDragDrop is a custom function which will be called when a Draggable is dropped
-			// on this Droppable; it is passed the Draggable that was dropped
-			var Droppable = function(element, customDragDrop) {
-			  this.init(element, customDragDrop);
-			};
-
-			Droppable.prototype = {
-			  init: function(element, customDragDrop) {
-			  	try {
-				    if (typeof element === "string") element = document.getElementById(element);
-				    
-				    this.element = element;
-				    this.isBeingDraggedOver = false;
-				    this.customDragDrop = customDragDrop;
-				    
-				    droppables.push(this);
-				} catch (err) {}
-			  },
-			  
-			  // Calculate the top-left coordinate of this element
-			  position: function() {
-			  	try {
-				    var position = {x: this.element.offsetLeft, y: this.element.offsetTop};
-				    
-				    var offsetParent = this.element.offsetParent;
-				    while (offsetParent) {
-				      position.x += offsetParent.offsetLeft;
-				      position.y += offsetParent.offsetTop;
-				      offsetParent = offsetParent.offsetParent;
-				    }
-				    
-				    return position;
-				 } catch (err) {}
-			  },
-			  
-			  // Calculate whether the given coordinate falls within this element's boundaries
-			  contains: function(point) {
-			  	try {
-				    var topLeft = this.position();
-				    var bottomRight = {
-				      x: topLeft.x + this.element.offsetWidth,
-				      y: topLeft.y + this.element.offsetHeight
-				    };
-				    
-				    return (
-				      topLeft.x < point.x
-				      && topLeft.y < point.y
-				      && point.x < bottomRight.x
-				      && point.y < bottomRight.y
-				    );
-				} catch (err) {}
-
-			  },
-			  
-			  // Called when an item is dragged into this element
-			  onDragEnter: function() {
-			    this.isBeingDraggedOver = true;
-			    this.element.className += "dragOver";
-			  },
-			  
-			  // Called when an item is dragged out of this element
-			  onDragExit: function() {
-			    this.isBeingDraggedOver = false;
-			    this.element.className = this.element.className.replace(/\bdragOver\b/, "");
-			  },
-			  
-			  // Called when an item is dropped on this element
-			  onDragDrop: function(draggable) {
-			    this.onDragExit();
-			    this.customDragDrop(draggable);
-			  }
-			};
-
-			initMultChoice = function() {
-			  // custom data
-			  var data = [
-			    "Seven",
-			    "Four",
-			    "One"
-			  ];
-			  
-			  var availableMetrics = document.getElementById("available_metrics_list");
-			  
-			  for (var i = 0; i < data.length; i++) {
-			    var liElement = document.createElement("li");
-			    liElement.appendChild(document.createTextNode(data[i]));
-			    availableMetrics.appendChild(liElement);
-			    var liElementDraggable = new Draggable(liElement);
-			  }
-			  
-			  var availableMetricsDroppable = new Droppable(availableMetrics, function(draggable) {
-			    if (this.element !== draggable.element.parentNode) {
-			      this.element.appendChild(draggable.element);
-			    }
-			  });
-			  
-			  var selectedMetricsDroppable = new Droppable("next_metric", function(draggable) {
-			    if (this.element.parentNode !== draggable.element.parentNode) {
-			      this.element.parentNode.insertBefore(draggable.element, this.element);
-			    }
-			  });
-			  
-			  new Droppable("remove_metric", function(draggable) {
-			    availableMetricsDroppable.onDragDrop(draggable);
-			  });
-			};
-
-			function answerIs() {
-				
-				if ($("#selected_metrics_list").first().children().length == 2 && $("#selected_metrics_list").first().children()[0].innerText == "One") {
-					$("#responseJSON").html("Correct");
-				} else {
-					$("#responseJSON").html("Incorrect");
-				}
-				
-			}
-
-		</script>
-
-		<br/>
-
-		<p><b>Drag the correct amount of dogs into the rectangle:</b></p>
-
-		<div id="selected_metrics">
-			<ul id="selected_metrics_list">
-    			<li id="next_metric">Drag Correct Response Here</li>
-  			</ul>
-		</div>
-
-		<div id="available_metrics_filter">
-			<ul id="available_metrics_list"> </ul>
-		</div>
-
-		<div>
-			<button class="btn btn-primary" onclick="answerIs()" >Submit Answer</button>
-		</div>
-
-		<br/>
-		<br/>
-
-		<script>initMultChoice();</script>
-
-		<div style="display:none;" id="responseJSON"></div>
-
+		
 	</div>
 
 </div>
