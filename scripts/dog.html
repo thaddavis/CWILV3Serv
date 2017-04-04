@@ -1124,14 +1124,28 @@
 		}).prototype = p = new cjs.MovieClip();
 		p.nominalBounds = new cjs.Rectangle(-390.2,-103.4,102.9,54.4);
 
+		function intersect(obj1, obj2) {
+
+			var pt = obj1.globalToLocal(stage.x, stage.y);
+			pt = { x: -pt.x, y: -pt.y }
+			
+			if (
+				( pt.x >= (obj2.x - obj2.nominalBounds.width / 2) && pt.x <= (obj2.x + obj2.nominalBounds.width / 2) ) &&
+				( pt.y >= (obj2.y - obj1.nominalBounds.height) && pt.y <= (obj2.y + obj2.nominalBounds.height) )
+			   ) {
+				return true;
+			}
+
+			return false;
+
+		}
 
 		// stage content:
 		(lib.CCKMCCA3_22a = function(mode,startPosition,loop) {
 			this.initialize(mode,startPosition,loop,{});
 
 			// timeline functions:
-			// timeline functions:
-	this.frame_49 = function() {
+			this.frame_49 = function() {
 	
 		//** Declare Event Handlers
 		this.instance_1.addEventListener("pressmove", fl_DragToAnswerLine_Ten.bind(this));
@@ -1262,55 +1276,55 @@
 
 			this.timeline.addTween(cjs.Tween.get(this.instance).wait(5).to({_off:false},0).wait(1).to({regX:-16.2,x:206.9,alpha:0.5},0).wait(1).to({alpha:1},0).wait(1).to({x:207},0).wait(42));
 
-			// // holdingLines
-			// this.answerLine = new lib.line03();
-			// this.answerLine.parent = this;
-			// this.answerLine.setTransform(438.7,273,0.957,1,0,0,0,82.3,0);
-			// this.answerLine._off = true;
+			// holdingLines
+			this.answerLine = new lib.line03();
+			this.answerLine.parent = this;
+			this.answerLine.setTransform(438.7,273,0.957,1,0,0,0,82.3,0);
+			this.answerLine._off = true;
 
-			// this.timeline.addTween(cjs.Tween.get(this.answerLine).wait(8).to({_off:false},0).wait(42));
+			this.timeline.addTween(cjs.Tween.get(this.answerLine).wait(8).to({_off:false},0).wait(42));
 
-			// // _ten
-			// this.instance_1 = new lib._ten();
-			// this.instance_1.parent = this;
-			// this.instance_1.setTransform(104,351.7);
-			// this.instance_1._off = true;
-			// new cjs.ButtonHelper(this.instance_1, 0, 1, 2, false, new lib._ten(), 3);
+			// _ten
+			this.instance_1 = new lib._ten();
+			this.instance_1.parent = this;
+			this.instance_1.setTransform(104,351.7);
+			this.instance_1._off = true;
+			new cjs.ButtonHelper(this.instance_1, 0, 1, 2, false, new lib._ten(), 3);
 
-			// this.timeline.addTween(cjs.Tween.get(this.instance_1).wait(24).to({_off:false},0).wait(26));
+			this.timeline.addTween(cjs.Tween.get(this.instance_1).wait(24).to({_off:false},0).wait(26));
 
-			// // _one
-			// this.instance_2 = new lib._one();
-			// this.instance_2.parent = this;
-			// this.instance_2.setTransform(314.5,351.7);
-			// this.instance_2._off = true;
-			// new cjs.ButtonHelper(this.instance_2, 0, 1, 2, false, new lib._one(), 3);
+			// _one
+			this.instance_2 = new lib._one();
+			this.instance_2.parent = this;
+			this.instance_2.setTransform(314.5,351.7);
+			this.instance_2._off = true;
+			new cjs.ButtonHelper(this.instance_2, 0, 1, 2, false, new lib._one(), 3);
 
-			// this.timeline.addTween(cjs.Tween.get(this.instance_2).wait(34).to({_off:false},0).wait(16));
+			this.timeline.addTween(cjs.Tween.get(this.instance_2).wait(34).to({_off:false},0).wait(16));
 
-			// // _seven
-			// this.seven07 = new lib._seven();
-			// this.seven07.parent = this;
-			// this.seven07.setTransform(525,353.2,0.961,1);
-			// this.seven07._off = true;
-			// new cjs.ButtonHelper(this.seven07, 0, 1, 2, false, new lib._seven(), 3);
+			// _seven
+			this.seven07 = new lib._seven();
+			this.seven07.parent = this;
+			this.seven07.setTransform(525,353.2,0.961,1);
+			this.seven07._off = true;
+			new cjs.ButtonHelper(this.seven07, 0, 1, 2, false, new lib._seven(), 3);
 
-			// this.timeline.addTween(cjs.Tween.get(this.seven07).wait(46).to({_off:false},0).wait(4));
+			this.timeline.addTween(cjs.Tween.get(this.seven07).wait(46).to({_off:false},0).wait(4));
 
-			// // lines
-			// this.line03 = new lib.line03();
-			// this.line03.parent = this;
-			// this.line03.setTransform(516.1,396.5,0.957,1,0,0,0,82.3,0);
+			// lines
+			this.line03 = new lib.line03();
+			this.line03.parent = this;
+			this.line03.setTransform(516.1,396.5,0.957,1,0,0,0,82.3,0);
 
-			// this.line02 = new lib.line03();
-			// this.line02.parent = this;
-			// this.line02.setTransform(307.1,396.5,0.957,1,0,0,0,82.3,0);
+			this.line02 = new lib.line03();
+			this.line02.parent = this;
+			this.line02.setTransform(307.1,396.5,0.957,1,0,0,0,82.3,0);
 
-			// this.line01 = new lib.line03();
-			// this.line01.parent = this;
-			// this.line01.setTransform(98.1,396.5,0.957,1,0,0,0,82.3,0);
+			this.line01 = new lib.line03();
+			this.line01.parent = this;
+			this.line01.setTransform(98.1,396.5,0.957,1,0,0,0,82.3,0);
 
-			// this.timeline.addTween(cjs.Tween.get({}).to({state:[]}).to({state:[{t:this.line01},{t:this.line02},{t:this.line03}]},8).wait(42));
+			this.timeline.addTween(cjs.Tween.get({}).to({state:[]}).to({state:[{t:this.line01},{t:this.line02},{t:this.line03}]},8).wait(42));
 
 		}).prototype = p = new cjs.MovieClip();
 		p.nominalBounds = new cjs.Rectangle(323.1,220,635,424);
@@ -1382,155 +1396,6 @@
 			}
 		}
 
-		TestMetadata = function() {
-			Answers = [
-		    	"Four",
-		    	"Six",
-		    	"One"
-			];
-
-			Answer = "One";  
-
-		    this.getAnswers = function() {
-		      return Answers;
-		    };
-		  
-		    this.getAnswer = function() {		      
-		      return Answer;
-		    };
-
-		};
-		testMetadata = new TestMetadata();
-
-		// Code for adding answers
-		function addAnswers(stage) {
-			//Drag Object Size
-			dragRadius = 40;
-			//Destination Size
-			destHeight = 100;
-			destWidth = 200;
-
-		    var box = new createjs.Shape();
-		    box.graphics.setStrokeStyle(2).beginStroke("black").rect(0, 0, destWidth, destHeight);
-		    box.setBounds(0, 0, destWidth, destHeight);
-		    var destination = new createjs.Container();
-
-		    destinationX = stage.canvas.clientWidth * 2 * 0.70; //(stage.canvas.clientWidth * 2); //* 0.75;// 400;
-		    destinationY = stage.canvas.clientHeight * 2 * 0.50; //(stage.canvas.clientHeight); //* 0.75;//200;
-		    //box.x = 0;
-		    //box.y = 0;
-		    destination.x = destinationX;
-		    destination.y = destinationY;
-		    // destination.x = 0;
-		    // destination.y = 0;
-
-		    // WHY!!!!????
-		    //destination.setBounds(1200, 540, 130, 10);
-		    console.log(destinationX);
-		    console.log(destinationY);
-
-		    destination.setBounds(destinationX, destinationY, destWidth, destHeight);
-
-		    destination.addChild(box);
-
-		    stage.addChild(destination);
-		    
-		    //*** Answers
-  			var offset = (stage.canvas.clientWidth) / (testMetadata.getAnswers().length * 2)
-  			testMetadata.getAnswers().forEach(function(value, i) {
-
-    			var label = new createjs.Text(value, "24px Lato", "#000");
-    			label.textAlign="center";
-
-    			label.y -= 10;
-  				var textRect = new createjs.Shape();
-
-  				var labelHeight = label.getBounds().height;
-  				var labelWidth = label.getBounds().width;
-
-		    	textRect.graphics.setStrokeStyle(2).beginStroke("black").beginFill('white').rect(-labelWidth,-labelHeight,labelWidth*2,labelHeight*2);
-
-    			var dragger = new createjs.Container();
-    			dragger.x = offset * (i*2 + 1) * 2;
-    			dragger.y = 380;
-    			dragger.addChild(textRect, label);
-    			//dragger.setBounds(0, 0, dragRadius, dragRadius);
-    			dragger.setBounds(-labelWidth,-labelHeight,labelWidth*2,labelHeight*2);
-
-    			//-------
-    			dragger.on("pressmove", function(evt) {
-					evt.currentTarget.x = evt.stageX / stage.scaleX;
-				    evt.currentTarget.y = evt.stageY / stage.scaleY;
-				    stage.update(); //much smoother because it refreshes the screen every pixel movement instead of the FPS set on the Ticker
-				    if(intersect(evt.currentTarget, destination)){				    
-			        	evt.currentTarget.alpha=0.2;
-			       		box.graphics.clear();
-			        	box.graphics.setStrokeStyle(3).beginStroke("#FF1111").rect(0, 0, destWidth, destHeight);			       
-			        } else{
-			        	evt.currentTarget.alpha=1;
-			        	box.graphics.clear();     
-			       		box.graphics.setStrokeStyle(2).beginStroke("black").rect(0, 0, destWidth, destHeight);
-			        }
-				});
-
-				dragger.on("pressup", function(evt) {
-					if(intersect(evt.currentTarget, destination)) {
-				      dragger.x = destination.x + destWidth/2;
-				      dragger.y = destination.y + destHeight/2;
-
-				      dragger.alpha = 1;
-				      box.graphics.clear();     
-				      box.graphics.setStrokeStyle(2).beginStroke("black").rect(0, 0, destWidth, destHeight);
-				      stage.update(evt);
-
-				      answerIs(evt.currentTarget.children[1].text);
-
-				    }
-				});
-				stage.addChild(dragger);
-			});
-		}
-
-		function intersect(obj1, obj2) {
-		    var objBounds1 = obj1.getBounds().clone();
-		    var objBounds2 = obj2.getBounds().clone();
-
-		    console.log('WAT');
-		    console.log(objBounds1);
-		    console.log(objBounds2);
-
-		    //var pt = obj1.globalToLocal(objBounds2.x, objBounds2.y);
-		    var pt = obj1.globalToLocal(stage.x, stage.y);
-		    pt = { x: -pt.x, y: -pt.y }
-		    console.log(pt);
-
-		    // var h1 = -(objBounds1.height / 2 + objBounds2.height);
-		    // var h2 = objBounds2.height / 2;
-		    // var w1 = -(objBounds1.width / 2 + objBounds2.width);
-		    // var w2 = objBounds2.width / 2;
-
-		    if (
-		    	( pt.x >= objBounds2.x && pt.x <= (objBounds2.x + objBounds2.width) ) &&
-		    	( pt.y >= objBounds2.y && pt.y <= (objBounds2.y + objBounds2.height) )
-		       ) {
-
-		       	console.log('ttt');
-		    	return true;
-		    }
-		    
-		    return false;
-		}
-
-		function answerIs(answer) {
-			if (answer == "One") {
-				$("#responseJSON").html("Correct");
-			} else {
-				$("#responseJSON").html("Incorrect");
-			}	
-		}
-
-		addAnswers(stage);
-		
 		makeResponsive(true,'both',false,2);	
 		fnStartAnimation();
 		 
